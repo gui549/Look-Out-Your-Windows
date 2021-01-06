@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "HiDTenv\\Scripts\\python.exe"
+    "python.pythonPath": "HiDTenv\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true
 }
