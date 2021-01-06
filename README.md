@@ -5,18 +5,15 @@
 [![Open HiDT in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/saic-mdal/hidt/blob/master/notebooks/HighResolutionDaytimeTranslation.ipynb)
 
 Official PyTorch implementation (only inference part) for the paper I. Anokhin, P. Solovev, D. Korzhenkov, A. Kharlamov, T. Khakhulin, A. Silvestrov, S. Nikolenko, V. Lempitsky, and G. Sterkin. "High-Resolution Daytime Translation Without Domain Labels." In 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR).
-![teaser image](./docs/img/1_intro_grid.jpg)
+
+Working on making this model into a deployable program
 
 ## Installation
-Make sure that you use python >= 3.7. We have tested it with conda package manager. If you are new to conda, proceed to https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html
+Make sure that you use python >= 3.7.
 
-```
-conda create -n hidt python=3.7
-conda activate hidt
-```
 #### Clone the repo
 ```
-git clone https://github.com/saic-mdal/HiDT.git
+git clone https://github.com/gui549/HiDT_application.git
 ```
 #### Install requirenments
 ```
