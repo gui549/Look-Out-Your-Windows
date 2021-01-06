@@ -1,4 +1,4 @@
-__all__ = ['TrainerBase']
+__all__ = ['TrainerBase'] # this makes several "import"s repesented as "import *".
 
 import logging
 from collections import defaultdict
@@ -9,24 +9,25 @@ import torch.optim
 
 from hidt import networks
 
-logger = logging.getLogger(__name__)
-
+logger = logging.getLogger(__name__)    # returns a reference to a logger instance with the specified name 
+                                        # if it is provided, or root if not.
+                                        # (__name__) -> when naming loggers is to use a module-level logger.
 
 class TrainerBase(nn.Module):
     def __init__(self, params):
         super().__init__()
         self.params = params
-        self.models_dict = defaultdict(list)
+        self.models_dict = defaultdict(list)    # dictionary with "default factory" that takes no arguments and provides the default value for a nonexistent key.
         models_parameters = self._init_models()
 
     def _init_models(self):
         parameters = defaultdict(list)
-        for model_name, model_config in self.params['models'].items():
-            architecture = self.params['models'][model_name]['architecture']
-            logger.debug(f'Building {model_name} with: {architecture}')
+        for model_name, model_config in self.params['models'].items(): # self.params['models'] = (model_name, model_config)
+            architecture = self.params['models'][model_name]['architecture'] 
+            logger.debug(f'Building {model_name} with: {architecture}') # logging
             setattr(self,
                     model_name,
-                    getattr(networks, architecture)(model_config).cuda()
+                    getattr(networks, architecture)(model_config).cuda() # self.model_name = architecture #######CURRENT#######
                     )
             parameters[model_config['optimizer_group']].extend(
                 getattr(self, model_name).parameters())

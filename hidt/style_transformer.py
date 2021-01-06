@@ -38,7 +38,7 @@ class StyleTransformer:
         self.interpolate_mode = interpolate_mode
         self.config = get_config(config_path)
 
-        self.trainer = getattr(trainers, self.config['trainer'])(self.config)
+        self.trainer = getattr(trainers, self.config['trainer'])(self.config) ##############current point
         if checkpoint_path is not None:
             state_dict = torch.load(checkpoint_path)
             state_dict_fixed = dict()
