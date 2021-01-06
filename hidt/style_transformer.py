@@ -38,7 +38,7 @@ class StyleTransformer:
         self.interpolate_mode = interpolate_mode
         self.config = get_config(config_path)
 
-        self.trainer = getattr(trainers, self.config['trainer'])(self.config) #current point
+        self.trainer = getattr(trainers, self.config['trainer'])(self.config) # getattr(trainers, config[trainer]) = Trainerbase()
         if checkpoint_path is not None: # load checkpoint state dictionary
             state_dict = torch.load(checkpoint_path)
             state_dict_fixed = dict()
@@ -46,9 +46,9 @@ class StyleTransformer:
                 state_dict_fixed[key.replace('module.', '')] = state_dict[key]
             self.trainer.gen.load_state_dict(state_dict_fixed)
         self.trainer = self.trainer.to(torch.device(device))
-        self.trainer.eval()
+        self.trainer.eval() # set to evaluation mode = training mode
 
-        self.color_space = self.config['test_dataset']['data']['images']['color_space']
+        self.color_space = self.config['test_dataset']['data']['images']['color_space'] # rgb
 
         content_image_transform_params = self.config['test_dataset']['transform']
         content_image_transform_params['color_space'] = self.color_space
@@ -56,8 +56,8 @@ class StyleTransformer:
         content_image_transform_params['load_size'] = inference_size
         content_image_transform_params['no_flip'] = True
 
-        style_image_transform_params = deepcopy(content_image_transform_params)
-        style_image_transform_params['load_size'] = inference_size
+        style_image_transform_params = deepcopy(content_image_transform_params) # just to be safe
+        style_image_transform_params['load_size'] = inference_size # XXX: redundant?
 
         self.image_transformers['content'] = get_transform(get_params(content_image_transform_params,
                                                                       size=(IMAGE_WIDTH, IMAGE_HEIGHT)))

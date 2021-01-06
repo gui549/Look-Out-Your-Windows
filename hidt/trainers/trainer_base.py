@@ -9,30 +9,33 @@ import torch.optim
 
 from hidt import networks
 
-logger = logging.getLogger(__name__)    # returns a reference to a logger instance with the specified name 
-                                        # if it is provided, or root if not.
+logger = logging.getLogger(__name__)    # returns a reference to a logger instance with the specified name if it is provided, 
+                                        # or root if not provided.
                                         # (__name__) -> when naming loggers is to use a module-level logger.
 
 class TrainerBase(nn.Module):
     def __init__(self, params):
         super().__init__()
         self.params = params
-        self.models_dict = defaultdict(list)    # dictionary with "default factory" that takes no arguments and provides the default value for a nonexistent key.
+        self.models_dict = defaultdict(list)    # non existent key has default value [].
         models_parameters = self._init_models()
 
     def _init_models(self):
         parameters = defaultdict(list)
-        for model_name, model_config in self.params['models'].items(): # self.params['models'] = (model_name, model_config)
-            architecture = self.params['models'][model_name]['architecture'] 
-            logger.debug(f'Building {model_name} with: {architecture}') # logging
-            setattr(self,
-                    model_name,
-                    getattr(networks, architecture)(model_config).cuda() # self.model_name = architecture #######CURRENT#######
-                    )
-            parameters[model_config['optimizer_group']].extend(
-                getattr(self, model_name).parameters())
-            self.models_dict[model_config['optimizer_group']].append(
-                model_name)
+        for model_name, model_config in self.params['models'].items(): # self.params['models'] = ('gen': dictionary of settings)
+            architecture = self.params['models'][model_name]['architecture'] # architecture: GeneratorContentStyleUnet
+
+            logger.debug(f'Building {model_name} with: {architecture}')
+            
+            setattr(self, model_name, getattr(networks, architecture)(model_config).cuda())
+            # getattr() returns GeneratorContentStyleUnet()
+            # TrainerBase.gen = GeneratorContentStyleUnet()
+
+            parameters[model_config['optimizer_group']].extend(getattr(self, model_name).parameters())
+            # {'generator' : [GeneratorContentStyleUnet().parameters()]}
+
+            self.models_dict[model_config['optimizer_group']].append(model_name)
+            # {'generator' : ['gen']}
         return parameters
 
     def forward(self, images_a, images_b):

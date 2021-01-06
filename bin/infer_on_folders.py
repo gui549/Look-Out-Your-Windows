@@ -52,7 +52,7 @@ def main():
                                          inference_size=args.inference_size,
                                          device=args.device)
 
-    result_path = os.path.join(args.output_dir, 'results/')
+    result_path = os.path.join(args.output_dir, 'results/') # TODO:CONTINUE HERE
     os.makedirs(result_path, exist_ok=True)
     print("result path : ", result_path)
 
