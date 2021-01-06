@@ -34,7 +34,9 @@ class ResidualDenseBlock_5C(nn.Module):
 
 
 class RRDB(nn.Module):
-    '''Residual in Residual Dense Block'''
+    '''Residual in Residual Dense Block
+        nf -> gc -> nf
+    '''
 
     def __init__(self, nf, gc=32):
         super(RRDB, self).__init__()
@@ -55,12 +57,14 @@ class RRDBNet(nn.Module):
         RRDB_block_f = functools.partial(RRDB, nf=nf, gc=gc)
 
         self.conv_first = nn.Conv2d(in_nc, nf, 3, 1, 1, bias=True)
-        self.RRDB_trunk = make_layer(RRDB_block_f, nb)
+        self.RRDB_trunk = make_layer(RRDB_block_f, nb)# XXX: need to check behavior
         self.trunk_conv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
 
-        self.upconv1 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
-        self.upconv2 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)
+        self.upconv1 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)# does not upsample
+        self.upconv2 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)# only makes layer deep
         self.pixelshuffle = nn.PixelShuffle(2)
+        # (∗,C×r^2, H, W) to (∗, C, H×r, W×r)
+        # depth of channel -> higher resolution
 
         self.HRconv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
         self.conv_last = nn.Conv2d(nf, out_nc, 3, 1, 1, bias=True)
@@ -74,6 +78,7 @@ class RRDBNet(nn.Module):
 
         fea = self.lrelu(self.pixelshuffle(self.upconv1(fea)))
         fea = self.lrelu(self.pixelshuffle(self.upconv2(fea)))
+        # resolution is now 4 times wider
 
         out = self.conv_last(self.lrelu(self.HRconv(fea)))
 

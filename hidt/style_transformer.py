@@ -28,10 +28,10 @@ class StyleTransformer:
         """
         Construct StyleTransformer
 
-        :param config_path: path to model config
-        :param checkpoint_path: path to checkpoint file
-        :param inference_size: resolution for style inference (better used resolution used for training)
-        :param interpolate_mode: interpolation mode for style upsampling before merging with original image
+        config_path: path to model config
+        checkpoint_path: path to checkpoint file
+        inference_size: resolution for style inference (better use resolution used for training)
+        interpolate_mode: interpolation mode for style upsampling before merging with original image
         """
         self.device = device
         self.image_transformers = dict()
@@ -39,7 +39,7 @@ class StyleTransformer:
         self.config = get_config(config_path)
 
         self.trainer = getattr(trainers, self.config['trainer'])(self.config) ##############current point
-        if checkpoint_path is not None:
+        if checkpoint_path is not None: # load checkpoint state dictionary
             state_dict = torch.load(checkpoint_path)
             state_dict_fixed = dict()
             for key in state_dict:
@@ -49,21 +49,25 @@ class StyleTransformer:
         self.trainer.eval()
 
         self.color_space = self.config['test_dataset']['data']['images']['color_space']
+
         content_image_transform_params = self.config['test_dataset']['transform']
         content_image_transform_params['color_space'] = self.color_space
         content_image_transform_params['preprocess'] = 'scale_load_shorter_side'
         content_image_transform_params['load_size'] = inference_size
         content_image_transform_params['no_flip'] = True
 
+        style_image_transform_params = deepcopy(content_image_transform_params)
+        style_image_transform_params['load_size'] = inference_size
+
         self.image_transformers['content'] = get_transform(get_params(content_image_transform_params,
                                                                       size=(IMAGE_WIDTH, IMAGE_HEIGHT)))
 
-        style_image_transform_params = deepcopy(content_image_transform_params)
-        style_image_transform_params['load_size'] = inference_size
         self.image_transformers['style'] = get_transform(get_params(style_image_transform_params,
                                                                     size=(IMAGE_WIDTH, IMAGE_HEIGHT)))
 
         self.image_transformers['original_image'] = transforms.ToTensor()
+        # get_params returns a dictionary
+        # get_transforms returns a torchvision.transforms
 
     def preprocess_images(self, pil_image: Union[List[Image.Image], Image.Image], mode='content') -> List[torch.Tensor]:
         """

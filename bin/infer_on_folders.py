@@ -58,29 +58,29 @@ def main():
 
     source_images_path = glob.glob(os.path.join(args.data_dir, '*'))
     style_images_path = glob.glob(os.path.join(args.style_dir, '*'))
+    # glob returns a list of dir
 
     source_images_pil = extract_images(source_images_path)
     style_images_pil = extract_images(style_images_path)
+    # returns list of PIL images
 
     with torch.no_grad():
         styles_decomposition = style_transformer.get_style(style_images_pil)
+        # list of style tensors
         if args.enhancement == 'generator':
-            g_enh = RRDBNet(in_nc=48,
-                            out_nc=3,
-                            nf=64,
-                            nb=5,
-                            gc=32).to(torch.device(args.device))
+            g_enh = RRDBNet(in_nc=48, out_nc=3, nf=64, nb=5, gc=32).to(torch.device(args.device))
+            # RRDBNet makes resolution 4 times higher (w,h) -> (4w, 4h)
+
             g_enh.load_state_dict(torch.load(args.enh_weights_path))
             result_images = []
             crop_transform = GridCrop(4, 1, hires_size=args.inference_size * 4)
+            # makes 4 sub-copies of original image
+
             for style in styles_decomposition:
                 styled_imgs = []
                 for source_image in source_images_pil:
                     crops = [img for img in crop_transform(source_image)]
-                    out = style_transformer.transfer_images_to_styles(crops,
-                                                                      [style],
-                                                                      batch_size=args.batch_size,
-                                                                      return_pil=False)
+                    out = style_transformer.transfer_images_to_styles(crops, [style], batch_size=args.batch_size, return_pil=False)
                     padded_stack = enhancement_preprocessing(out[0])
                     out = g_enh(padded_stack)
                     styled_imgs.append([transforms.ToPILImage()((out[0].cpu().clamp(-1, 1) + 1.) / 2.)])
