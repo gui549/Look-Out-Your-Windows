@@ -106,11 +106,11 @@ class StyleTransformer:
         """
 
         if mode == 'content':
-            encoding_fn = self.trainer.gen.encode_content_batch
+            encoding_fn = self.trainer.gen.encode_content_batch #in "gen_contents_style_net.py"
         elif mode == 'style':
-            encoding_fn = self.trainer.gen.encode_style_batch
+            encoding_fn = self.trainer.gen.encode_style_batch #in "gen_content_style.py"
         else:
-            encoding_fn = self.trainer.gen.encode
+            encoding_fn = self.trainer.gen.encode #in "gen_content_style.py"
 
         output = []
         with torch.no_grad():
@@ -121,7 +121,7 @@ class StyleTransformer:
                 output.append(current_output)
         return output
 
-    def get_style(self, pil_image: Union[List[Image.Image], Image.Image], batch_size=None):
+    def get_style(self, pil_image: Union[List[Image.Image], Image.Image], batch_size=None): 
         """
         Return style tuple for pil image or list of pil images
 
