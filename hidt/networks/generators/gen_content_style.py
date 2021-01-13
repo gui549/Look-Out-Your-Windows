@@ -15,7 +15,7 @@ class GeneratorContentStyle(GeneratorBase):
         self.style_dim = self.decoder.style_dim
 
     def _check_config(self, params):
-        assert 'content_encoder' in params['modules']
+        assert 'content_encoder' in params['modules'] # if there doesn't exist "content_encoder", raise Error
         assert 'style_encoder' in params['modules']
         assert 'decoder' in params['modules']
 
