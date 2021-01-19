@@ -28,11 +28,11 @@ class GeneratorContentStyleUnet(GeneratorContentStyle):
             batch_size = data['images'].shape[0]
 
         if isinstance(batch_size, torch.TensorType):
-            batch_size = batch_size.item() # in case batch_size is tensor
+            batch_size = batch_size.item() # when batch_size is tensor
 
         for images in data['images'].split(int(batch_size)): 
-            content_outputs = self.content_encoder(images) # gen.content_encoder(images)
-            contents.append(content_outputs[0]) # TODO : currnet point
+            content_outputs = self.content_encoder(images) # content_outputs = ContentEncoderUnet(images)
+            contents.append(content_outputs[0]) 
             intermediate_outputs.append(content_outputs[1:])
 
         return dict(
