@@ -60,7 +60,7 @@ def main():
     style_images_path = glob.glob(os.path.join(args.style_dir, '*'))
     # glob.glob returns a list of all files/directories matching "arg.data_dir/*"
 
-    source_images_pil = extract_images(source_images_path)
+    source_images_pil = extract_images(source_images_path) # input : [paths], output : [RGB_img]
     style_images_pil = extract_images(style_images_path)
     # returns list of PIL images
 

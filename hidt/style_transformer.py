@@ -77,22 +77,22 @@ class StyleTransformer:
         """
         assert mode in self.image_transformers, 'Wrong transform mode.'
 
-        if not isinstance(pil_image, (list, tuple)):
+        if not isinstance(pil_image, (list, tuple)): # check whether pil_image is list or tuple
             pil_image = [pil_image]
 
         output = []
         equally_sized_batch = True
         for cur_image in pil_image:
-            if cur_image.size != pil_image[0].size:
+            if cur_image.size != pil_image[0].size: # size = (Height, Width)
                 equally_sized_batch = False
-            output.append(self.image_transformers[mode](
-                cur_image).to(self.device))
+            output.append(self.image_transformers[mode]( 
+                cur_image).to(self.device)) 
 
         if len(output) > 1:
             if equally_sized_batch:
-                return [torch.stack(output)]
+                return [torch.stack(output)] # B = 1, C = len(output)
             else:
-                return [tensor.unsqueeze(0) for tensor in output]
+                return [tensor.unsqueeze(0) for tensor in output] # B = len(output), C = 1
         else:
             return [torch.stack(output)]
 
@@ -114,9 +114,9 @@ class StyleTransformer:
 
         output = []
         with torch.no_grad():
-            img_tensors = self.preprocess_images(pil_image, mode=mode)
+            img_tensors = self.preprocess_images(pil_image, mode=mode) # get list of 4D Tensor with shape B x C x H x W
             for current_tensor in img_tensors:
-                data = dict(images=current_tensor)
+                data = dict(images=current_tensor) # TODO : current point
                 current_output = encoding_fn(data, batch_size=batch_size)
                 output.append(current_output)
         return output
