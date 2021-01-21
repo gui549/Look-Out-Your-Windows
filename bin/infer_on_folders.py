@@ -52,13 +52,13 @@ def main():
                                          inference_size=args.inference_size,
                                          device=args.device)
 
-    result_path = os.path.join(args.output_dir, 'results/')  # result_path = output_dir + "result/"
-    os.makedirs(result_path, exist_ok=True)  # if exist_ok == false, target directory already exists => error
+    result_path = os.path.join(args.output_dir, 'results/')  # "output_dir/result/"
+    os.makedirs(result_path, exist_ok=True)  # exist_ok == False : error when target directory exists
     print("result path : ", result_path)
 
-    source_images_path = glob.glob(os.path.join(args.data_dir, '*')) # glob.glob(arg.data_dir + "*")
+    source_images_path = glob.glob(os.path.join(args.data_dir, '*')) # glob.glob("arg.data_dir/*")
     style_images_path = glob.glob(os.path.join(args.style_dir, '*'))
-    # glob.glob returns a list of all file in arg.data_dir + "*"
+    # glob.glob returns a list of all files/directories matching "arg.data_dir/*"
 
     source_images_pil = extract_images(source_images_path)
     style_images_pil = extract_images(style_images_path)

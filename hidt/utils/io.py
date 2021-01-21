@@ -17,7 +17,8 @@ def save_img(img: Image.Image, path: str) -> None:
 
 def extract_images(images_list: List[str]) -> List[Image.Image]:
     output = []
-    for im_path in tqdm(images_list): #tqdm : library to print progress
+    for im_path in tqdm(images_list): 
+        # tqdm : library to print progress bar
         img = Image.open(im_path).convert('RGB')
         output.append(img)
     return output
