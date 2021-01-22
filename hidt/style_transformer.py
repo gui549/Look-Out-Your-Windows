@@ -115,8 +115,8 @@ class StyleTransformer:
         output = []
         with torch.no_grad():
             img_tensors = self.preprocess_images(pil_image, mode=mode) # get list of 4D Tensor with shape B x C x H x W
-            for current_tensor in img_tensors:
-                data = dict(images=current_tensor) # TODO : current point
+            for current_tensor in img_tensors: # current_tensor.shape = C X H X W
+                data = dict(images=current_tensor) # data = {images : current tensor}
                 current_output = encoding_fn(data, batch_size=batch_size)
                 output.append(current_output)
         return output

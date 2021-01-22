@@ -27,16 +27,16 @@ class GeneratorContentStyle(GeneratorBase):
             style=torch.cat(styles),
         )
 
-    def encode_style_batch(self, data, batch_size=None):
+    def encode_style_batch(self, data, batch_size=None): # data : C X H X W
         styles = []
         if batch_size is None:
-            batch_size = data['images'].shape[0]
+            batch_size = data['images'].shape[0] 
 
         for images in data['images'].split(batch_size):
-            styles.append(self.style_encoder(images))
+            styles.append(self.style_encoder(images)) #StyleEncoder = output_dim (3) X 1 X 1
 
         return dict(
-            style=torch.cat(styles),
+            style=torch.cat(styles), # {"style" : (num_batch * 3) X 1 X 1}
         )
 
     def encode_content(self, data, batch_size=None):
