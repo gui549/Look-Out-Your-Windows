@@ -65,17 +65,17 @@ def main():
     # returns list of PIL images
 
     with torch.no_grad():
-        styles_decomposition = style_transformer.get_style(style_images_pil) # styles_decomposition = [{"style" : ?? X 1 X 1 style tensor]
+        styles_decomposition = style_transformer.get_style(style_images_pil) # styles_decomposition = [{"style" : * X 1 X 1 style tensor}]
         # list of style tensors
-        if args.enhancement == 'generator': # TODO: current point
+        if args.enhancement == 'generator': 
             g_enh = RRDBNet(in_nc=48, out_nc=3, nf=64, nb=5, gc=32).to(torch.device(args.device))
             # RRDBNet makes resolution 4 times higher (w,h) -> (4w, 4h)
 
             g_enh.load_state_dict(torch.load(args.enh_weights_path))
             result_images = []
             crop_transform = GridCrop(4, 1, hires_size=args.inference_size * 4)
-            # makes 4 sub-copies of original image
-
+            # makes 4 sub-copies of original image (==> 4 diffrent coords high-resoulution images)
+            
             for style in styles_decomposition:
                 styled_imgs = []
                 for source_image in source_images_pil:

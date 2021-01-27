@@ -32,8 +32,8 @@ class GeneratorContentStyleUnet(GeneratorContentStyle):
 
         for images in data['images'].split(int(batch_size)): # images = batch_size X H X W 
             content_outputs = self.content_encoder(images) # content_outputs = ContentEncoderUnet(images) : encoded tensor
-            contents.append(content_outputs[0]) # content_output : downsampled twice
-            intermediate_outputs.append(content_outputs[1:]) # skip connections
+            contents.append(content_outputs[0]) # content_output : twice downsampled tensor
+            intermediate_outputs.append(content_outputs[1:]) # intermediate output for skip connections => outputs[0] = 2 X * X * X *
 
         return dict(
             content=torch.cat(contents),

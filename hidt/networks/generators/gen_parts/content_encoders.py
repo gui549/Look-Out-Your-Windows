@@ -55,7 +55,7 @@ class ContentEncoderUnet(ContentEncoderBC):
             tensor = layer(tensor) 
         #tensor = module_list_forward(self.model_preparation, tensor, spade_input) ==> because of same operation.
 
-        for layer in self.model_downsample: #
+        for layer in self.model_downsample: 
             skip_dim = 5
             if skip_dim > 0:
                 out = tensor[:, :skip_dim]

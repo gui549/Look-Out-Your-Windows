@@ -54,16 +54,16 @@ class RRDB(nn.Module):
 class RRDBNet(nn.Module):
     def __init__(self, in_nc, out_nc, nf, nb, gc=32):
         super(RRDBNet, self).__init__()
-        RRDB_block_f = functools.partial(RRDB, nf=nf, gc=gc)
+        RRDB_block_f = functools.partial(RRDB, nf=nf, gc=gc) # make a partial func of RRDB
 
-        self.conv_first = nn.Conv2d(in_nc, nf, 3, 1, 1, bias=True)
-        self.RRDB_trunk = make_layer(RRDB_block_f, nb)# XXX: need to check behavior
+        self.conv_first = nn.Conv2d(in_nc, nf, 3, 1, 1, bias=True) # * X nf X H X W
+        self.RRDB_trunk = make_layer(RRDB_block_f, nb)# XXX: need to check behavior 
         self.trunk_conv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
 
         self.upconv1 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)# does not upsample
         self.upconv2 = nn.Conv2d(nf, nf * 4, 3, 1, 1, bias=True)# only makes layer deep
         self.pixelshuffle = nn.PixelShuffle(2)
-        # (∗,C×r^2, H, W) to (∗, C, H×r, W×r)
+        # (∗, C X r^2, H, W) to (∗, C, H X r, W X r)
         # depth of channel -> higher resolution
 
         self.HRconv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)

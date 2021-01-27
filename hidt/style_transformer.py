@@ -193,7 +193,8 @@ class StyleTransformer:
         """
         # list of decompositions of batches
         source_decompositions = self.get_content(
-            pil_images, batch_size=batch_size)
+            pil_images, batch_size=batch_size) 
+        #source_decompositions = [{contents : a list of tensors, intermediate_outputs : a list of tensors}]
 
         output_translated = []
 
