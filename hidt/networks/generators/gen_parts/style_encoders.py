@@ -26,7 +26,7 @@ class StyleEncoderBase(nn.Module):
         for layer in self.head:
             tensor = layer(tensor)
 
-        return tensor
+        return tensor # output_dim X 1 X 1
 
 
 class StyleEncoder(StyleEncoderBase):

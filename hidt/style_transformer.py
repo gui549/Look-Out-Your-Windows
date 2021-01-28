@@ -115,8 +115,8 @@ class StyleTransformer:
         output = []
         with torch.no_grad():
             img_tensors = self.preprocess_images(pil_image, mode=mode) # get list of 4D Tensor with shape B x C x H x W
-            for current_tensor in img_tensors:
-                data = dict(images=current_tensor) # TODO : current point
+            for current_tensor in img_tensors: # current_tensor.shape = C X H X W
+                data = dict(images=current_tensor) # data = {images : current tensor}
                 current_output = encoding_fn(data, batch_size=batch_size)
                 output.append(current_output)
         return output
@@ -152,8 +152,8 @@ class StyleTransformer:
         :return: list of 4D image tensors. Batch sizes of these tensors correspond to batch sizes from decompositions
         """
         image_tensors = []
-        for decomposition_a, decomposition_b in zip(source_decompositions, target_decompositions):
-            decomposition = self.trainer._mix_decompositions(
+        for decomposition_a, decomposition_b in zip(source_decompositions, target_decompositions): # decomposition_a, b = dictionary
+            decomposition = self.trainer._mix_decompositions(   # TODO : CURRENT POINT
                 decomposition_a, decomposition_b)
             tensor = self.trainer.gen.decode(
                 decomposition, batch_size=batch_size)['images']
@@ -193,17 +193,17 @@ class StyleTransformer:
         """
         # list of decompositions of batches
         source_decompositions = self.get_content(
-            pil_images, batch_size=batch_size)
-
+            pil_images, batch_size=batch_size) 
+        #source_decompositions = [{content : a list of tensors, intermediate_outputs : a list of tensors}, ... , {}]
         output_translated = []
 
         # for decomposition of batch, batch of image tensors in zip(...)
-        for cur_source_decomposition in source_decompositions:
+        for cur_source_decomposition in source_decompositions: #cur_source_decomposition = {content : a list of tensors, intermediate_outputs : a list of tensors}
             # for target decomposition of batch
             batch_translated = []
             for cur_target_decomposition in target_decompositions:
                 # calculate the translated batch (list of size 1), take it from list and rescale to [0, 1] pixel values
-                translated_tensors = self.transfer_decompositions([cur_source_decomposition],
+                translated_tensors = self.transfer_decompositions([cur_source_decomposition], 
                                                                   [cur_target_decomposition],
                                                                   batch_size=batch_size,
                                                                   )[0] * 0.5 + 0.5

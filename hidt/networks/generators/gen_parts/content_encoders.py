@@ -51,11 +51,11 @@ class ContentEncoderUnet(ContentEncoderBC):
 
     def forward(self, tensor: torch.Tensor):
         output : List[torch.Tensor] = []
-        for layer in self.model_preparation:
-            tensor = layer(tensor)
-        #tensor = module_list_forward(self.model_preparation, tensor, spade_input)
+        for layer in self.model_preparation: 
+            tensor = layer(tensor) 
+        #tensor = module_list_forward(self.model_preparation, tensor, spade_input) ==> because of same operation.
 
-        for layer in self.model_downsample:
+        for layer in self.model_downsample: 
             skip_dim = 5
             if skip_dim > 0:
                 out = tensor[:, :skip_dim]
@@ -69,5 +69,5 @@ class ContentEncoderUnet(ContentEncoderBC):
             tensor = layer(tensor)
         #tensor = module_list_forward(self.model_postprocess, tensor, spade_input)
         output.append(tensor)
-        output_reversed: List[torch.Tensor] = [output[2], output[1], output[0]]
-        return output_reversed
+        output_reversed: List[torch.Tensor] = [output[2], output[1], output[0]] 
+        return output_reversed 
