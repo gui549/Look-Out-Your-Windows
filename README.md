@@ -2,10 +2,10 @@
 
 Generate Daytime Translated Images and Change Desktop Wallpaper Over Time.
 
-<img src="https://user-images.githubusercontent.com/70506921/131011762-b4a5e378-464b-44b9-8308-a1e94d3069c8.jpg" width="500" height="300"/>
-<img src="https://user-images.githubusercontent.com/70506921/131011769-3f1e986a-9c9c-4523-97e9-f18bd4ac5127.jpg" width="500" height="300"/>
-<img src="https://user-images.githubusercontent.com/70506921/131011772-1ee3ad3b-4ad4-4b2f-86ca-469234616f3a.jpg" width="500" height="300"/>
-<img src="https://user-images.githubusercontent.com/70506921/131011776-686a98b6-dd65-47f6-b16a-36012450b847.jpg" width="500" height="300"/>
+<img src="https://user-images.githubusercontent.com/70506921/131011762-b4a5e378-464b-44b9-8308-a1e94d3069c8.jpg" width="250" height="150"/>
+<img src="https://user-images.githubusercontent.com/70506921/131011769-3f1e986a-9c9c-4523-97e9-f18bd4ac5127.jpg" width="250" height="150"/>
+<img src="https://user-images.githubusercontent.com/70506921/131011772-1ee3ad3b-4ad4-4b2f-86ca-469234616f3a.jpg" width="250" height="150"/>
+<img src="https://user-images.githubusercontent.com/70506921/131011776-686a98b6-dd65-47f6-b16a-36012450b847.jpg" width="250" height="150"/>
 
 ## Installation
 **Method 1.**
