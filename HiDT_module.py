@@ -25,12 +25,13 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
 
     source_images_path = [data_dir]
     style_images_path = glob.glob(os.path.join(style_dir, '*'))
+    style_images_path = [path.replace("\\", "/") for path in style_images_path]
     # glob.glob returns a list of all files/directories matching "arg.data_dir/*"
 
     source_images_pil = extract_images(source_images_path) # input : [paths], output : [RGB_img]
     style_images_pil = extract_images(style_images_path)
     # returns list of PIL images
-
+    
     with torch.no_grad():
         result_images = []
         g_enh = RRDBNet(in_nc=48, out_nc=3, nf=64, nb=5, gc=32).to(torch.device(device))
@@ -67,7 +68,7 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
 
 # To test infer
 if __name__ == '__main__': 
-    infer(data_dir="./Test2.jpg", style_dir="./images/daytime/styles/", \
+    infer(data_dir="./Test2.jpg", style_dir="./images/styles/", \
                 cfg_path="./configs/daytime.yaml", \
                 weight_path="./trained_models/generator/daytime.pt", \
                 enh_weights_path="./trained_models/enhancer/enhancer.pth", \

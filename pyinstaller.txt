@@ -1,4 +1,24 @@
-pyinstaller --add-binary 'images/styles/morning.jpg:image/styles' \
+# For Windows
+pyinstaller --windowed ^
+            --name=LookOutYourWindows ^
+            --icon=.\icon.ico ^
+            --paths=c:\Users\user\Desktop\HiDT\Look-Out-Your-Windows\venv\Lib\site-packages ^
+            --add-binary "icon.ico;." ^
+            --add-binary "images/styles/morning.jpg;image/styles" ^
+            --add-binary "images/styles/afternoon.jpg;image/styles" ^
+            --add-binary "images/styles/evening.jpg;image/styles" ^
+            --add-binary "images/styles/night.jpg;image/styles" ^
+            --add-data "GUI/MainGui.ui;GUI" ^
+            --add-data "GUI/SaveGui.ui;GUI" ^
+            --add-data "configs/daytime.yaml;config" ^
+            --add-data "trained_models/enhancer/enhancer.pth;trained_models/enhancer" ^
+            --add-data "trained_models/generator/daytime.pt;trained_models/generator" ^
+            WindowsGui.py
+            
+# For Ubuntu
+pyinstaller --name=LookOutYourWindows ^
+            --icon=.\icon.ico ^
+            --add-binary 'images/styles/morning.jpg:image/styles' \
             --add-binary 'images/styles/afternoon.jpg:image/styles' \
             --add-binary 'images/styles/evening.jpg:image/styles' \
             --add-binary 'images/styles/night.jpg:image/styles' \
@@ -8,6 +28,3 @@ pyinstaller --add-binary 'images/styles/morning.jpg:image/styles' \
             --add-data 'trained_models/enhancer/enhancer.pth:trained_models/enhancer' \
             --add-data 'trained_models/generator/daytime.pt: trained_models/generator' \
             UbuntuGui.py
-
-
-

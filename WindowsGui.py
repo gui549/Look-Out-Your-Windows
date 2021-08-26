@@ -3,13 +3,13 @@ from datetime import datetime
 
 from PyQt5.QtWidgets import QAction, QApplication, QDialog, QFileDialog, QMainWindow, QMenu, QSystemTrayIcon
 from PyQt5.QtGui import *
-from PyQt5 import uic
+from PyQt5.uic import loadUiType
 from PyQt5.QtCore import QCoreApplication, QThread, QTimer, pyqtSignal
 
 from HiDT_module import infer
 
-main_form = uic.loadUiType("./GUI/MainGui.ui")[0] # Main Window GUI
-save_form = uic.loadUiType("./GUI/SaveGui.ui")[0] # Save Path Select Dialog GUI
+main_form = loadUiType("./GUI/MainGui.ui")[0] # Main Window GUI
+save_form = loadUiType("./GUI/SaveGui.ui")[0] # Save Path Select Dialog GUI
 
 # Main Window
 class MainWindow(QMainWindow, main_form):
@@ -17,7 +17,8 @@ class MainWindow(QMainWindow, main_form):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("Look Out Your Windows")
-        
+        self.setWindowIcon(QIcon("icon.ico"))
+
         # Load the image and save path from file
         try:
             f = open(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt", "r")
@@ -194,7 +195,7 @@ class InferThread(QThread):
         
         # Reduce CPU priority to avoid stuck
         p = psutil.Process(os.getpid())
-        p.nice(5)
+        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
 
         self.image_path = parent.image_path
         self.save_path = parent.save_path
@@ -226,7 +227,7 @@ if __name__ == '__main__':
     app.setQuitOnLastWindowClosed(False)
 
     # Adding an icon
-    icon = QIcon("icon.png")
+    icon = QIcon("icon.ico")
     
     # Adding item on the menu bar
     tray = QSystemTrayIcon()

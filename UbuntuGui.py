@@ -17,6 +17,7 @@ class MainWindow(QMainWindow, main_form):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("Look Out Your Windows")
+        self.setWindowIcon(QIcon("icon.ico"))
         
         # Load the image and save path from file
         try:
@@ -225,7 +226,7 @@ if __name__ == '__main__':
     app.setQuitOnLastWindowClosed(False)
 
     # Adding an icon
-    icon = QIcon("icon.png")
+    icon = QIcon("icon.ico")
     
     # Adding item on the menu bar
     tray = QSystemTrayIcon()

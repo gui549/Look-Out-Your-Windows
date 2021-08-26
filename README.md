@@ -1,89 +1,71 @@
-# High-Resolution Daytime Translation Without Domain Labels
+# Look Out Your Windows
 
-### [Project Page](https://saic-mdal.github.io/HiDT/) | [Video Explanation](https://youtu.be/DALQYKt-GJc) | [Paper](https://arxiv.org/abs/2003.08791) | [Appendix](https://saic-mdal.github.io/HiDT/paper/High-Resolution_Daytime_Translation_Without_Domain_Labels.pdf) | [TwoMinutePapers](https://www.youtube.com/watch?v=EWKAgwgqXB4)
-
-[![Open HiDT in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/saic-mdal/hidt/blob/master/notebooks/HighResolutionDaytimeTranslation.ipynb)
-
-Official PyTorch implementation (only inference part) for the paper I. Anokhin, P. Solovev, D. Korzhenkov, A. Kharlamov, T. Khakhulin, A. Silvestrov, S. Nikolenko, V. Lempitsky, and G. Sterkin. "High-Resolution Daytime Translation Without Domain Labels." In 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR).
-
-Working on making this model into a deployable program
+Generate Daytime Translated Images and Change Desktop Wallpaper Over Time.
 
 ## Installation
-Make sure that you use python >= 3.7.
+Method 1. 
+- Download zip file from release.
 
-#### Clone the repo
-```
-git clone https://github.com/gui549/HiDT_application.git
-```
-#### Install requirenments
-```
-cd HiDT
+Method 2. 
+- Clone this repository.
+- Install the requirements.
+'''
 pip install -r requirements.txt
-```
+'''
+- Make exe file using Pyinstaller.
+'''
+pyinstaller --windowed ^
+            --name=LookOutYourWindows ^
+            --icon=.\icon.ico ^
+            --paths=c:\Users\user\Desktop\HiDT\Look-Out-Your-Windows\venv\Lib\site-packages ^
+            --add-binary "icon.ico;." ^
+            --add-binary "images/styles/morning.jpg;image/styles" ^
+            --add-binary "images/styles/afternoon.jpg;image/styles" ^
+            --add-binary "images/styles/evening.jpg;image/styles" ^
+            --add-binary "images/styles/night.jpg;image/styles" ^
+            --add-data "GUI/MainGui.ui;GUI" ^
+            --add-data "GUI/SaveGui.ui;GUI" ^
+            --add-data "configs/daytime.yaml;config" ^
+            --add-data "trained_models/enhancer/enhancer.pth;trained_models/enhancer" ^
+            --add-data "trained_models/generator/daytime.pt;trained_models/generator" ^
+            WindowsGui.py
+'''
 
-## Inference
-Daytime translation, upsampling with G<sub>enh</sub>
-```
-CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$(pwd):${PYTHONPATH} \
-python ./bin/infer_on_folders.py \
-    --content-dir ./images/daytime/content/ \
-    --style-dir ./images/daytime/styles/ \
-    --cfg-path ./configs/daytime.yaml \
-    --chk-path ./trained_models/generator/daytime.pt \
-    --enh-path ./trained_models/enhancer/enhancer.pth \
-    --enhancement generator
-```
-Daytime translation, generator in fully convolutional mode, no postprocessing
-```
-CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$(pwd):${PYTHONPATH} \
-python ./bin/infer_on_folders.py \
-    --content-dir ./images/daytime/content/ \
-    --style-dir ./images/daytime/styles/ \
-    --cfg-path ./configs/daytime.yaml \
-    --chk-path ./trained_models/generator/daytime.pt \
-    --enhancement fullconv
-```
-Model, trained on wikiart, upsampling with G<sub>enh</sub>
-```
-CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$(pwd):${PYTHONPATH} \
-python ./bin/infer_on_folders.py \
-    --content-dir ./images/wikiart/content/ \
-    --style-dir ./images/wikiart/styles/ \
-    --cfg-path ./configs/wikiart.yaml \
-    --chk-path ./trained_models/generator/wikiart.pt \
-    --enh-path ./trained_models/enhancer/enhancer.pth \
-    --enhancement generator
-```
-Model, trained on wikiart, generator in fully convolutional mode, no postprocessing
-```
-CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$(pwd):${PYTHONPATH} \
-python ./bin/infer_on_folders.py \
-    --content-dir ./images/wikiart/content/ \
-    --style-dir ./images/wikiart/styles/ \
-    --cfg-path ./configs/wikiart.yaml \
-    --chk-path ./trained_models/generator/wikiart.pt \
-    --enhancement fullconv
-```
+## Getting Started
+1. Excute "LookOutYourWindows.exe".
 
-## Citation
-If you found our work useful, please don't forget to cite
-```
-@inproceedings{Anokhin_2020_CVPR,
-  author = {Anokhin, Ivan and
-            Solovev, Pavel and
-            Korzhenkov, Denis and
-            Kharlamov, Alexey and
-            Khakhulin, Taras and
-            Silvestrov, Alexey and
-            Nikolenko, Sergey and
-            Lempitsky, Victor and
-            Sterkin, Gleb
-  },
-  title = {High-Resolution Daytime Translation Without Domain Labels},
-  booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
-  month = {June},
-  year = {2020},
-}
-```
+2. Press 'Browse' button and select an image.
 
-<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+3. Press 'Start' button and select save folder. If you want to save the image and folder, press a checkbox.
+
+4. Press 'OK' button to create images.
+
+5. If there exist previously created images in the save folder, skip the create process.
+
+6. Until pressing 'Stop' or 'Exit' button, it changes the desktop wallpaper over time.
+    
+- Time slots
+    - 07:00 ~ 13:00
+    - 13:00 ~ 18:00
+    - 18:00 ~ 21:00
+    - 21:00 ~ 07:00
+
+## Caveats
+- It may be treated as malware in Windows 10, but it is NEVER malware. (Trying to solve this problem)
+- Creating images by CPU needs high CPU utilization, so it could be stuck or spend a long time.
+- If you save the image and folder path, "LookOutYourWindows_SavePath.txt" is created in "c:/Users/user".
+
+## Rooms for improvement
+- Make higher resolution images.
+- Use GPU to create images if possible.
+- Make candidate images to pick the favorite one.
+- Use more images to separate time slots in detail. 
+
+### Citation
+- High-Resolution Daytime Translation Without Domain Labels
+    - Authors: Anokhin, Ivan and Solovev, Pavel and Korzhenkov, Denis and Kharlamov, Alexey and Khakhulin,
+            Taras and Silvestrov, Alexey and Nikolenko, Sergey and Lempitsky, Victor and Sterkin, Gleb
+    - https://github.com/saic-mdal/HiDT
+
+- Icon
+    - made by https://www.freepik.com from https://www.flaticon.com/

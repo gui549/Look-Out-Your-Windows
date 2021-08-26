@@ -1,4 +1,4 @@
-__pycache__
+_pycache__
 .vscode
 .pylintrc
 *.pyc
@@ -7,3 +7,4 @@ winvenv
 Docker
 dist
 build
+.spec
