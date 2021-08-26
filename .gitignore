@@ -8,4 +8,3 @@ venv
 winvenv
 Docker
 dist
-build
