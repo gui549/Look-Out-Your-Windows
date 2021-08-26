@@ -2,9 +2,8 @@ __pycache__
 .vscode
 .pylintrc
 *.pyc
-results
-images
 venv
 winvenv
 Docker
 dist
+build
