@@ -3,10 +3,10 @@
 Generate Daytime Translated Images and Change Desktop Wallpaper Over Time.
 
 ## Installation
-Method 1. 
+**Method 1.**
 - Download zip file from release.
 
-Method 2. 
+**Method 2.**
 - Clone this repository.
 
 - Install the requirements.
@@ -46,11 +46,10 @@ pyinstaller --windowed ^
 
 6. Until pressing 'Stop' or 'Exit' button, it changes the desktop wallpaper over time.
     
-Time slots
-    - 07:00 ~ 13:00, 13:00 ~ 18:00, 18:00 ~ 21:00, 21:00 ~ 07:00
+- Time slots: 07:00 ~ 13:00, 13:00 ~ 18:00, 18:00 ~ 21:00, 21:00 ~ 07:00
 
 ## Caveats
-- It may be treated as malware in Windows 10, but it is NEVER a malware. (Trying to solve this problem)
+- It may be treated as malware in Windows 10, but it is **NEVER** a malware. (Trying to solve this problem)
 
 - Creating images by CPU needs high CPU utilization, so it could be stuck or spend a long time.
 
