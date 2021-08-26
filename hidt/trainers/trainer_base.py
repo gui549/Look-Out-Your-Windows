@@ -27,7 +27,7 @@ class TrainerBase(nn.Module):
 
             logger.debug(f'Building {model_name} with: {architecture}')
             
-            setattr(self, model_name, getattr(networks, architecture)(model_config).cuda())
+            setattr(self, model_name, getattr(networks, architecture)(model_config).cpu())
             # getattr() returns GeneratorContentStyleUnet()
             # TrainerBase.gen = GeneratorContentStyleUnet()
 

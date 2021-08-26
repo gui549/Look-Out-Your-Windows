@@ -1,4 +1,10 @@
+_pycache_
 .vscode
 .pylintrc
 *.pyc
 results
+images
+venv
+winvenv
+Docker
+dist
