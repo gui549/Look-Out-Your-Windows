@@ -1,6 +1,6 @@
 # Look Out Your Windows
 
-Generate Daytime Translated Images and Change Desktop Wallpaper Over Time.
+Create a __Time-varying__ Wallpaper for your Windows/UNIX device!
 
 <img src="https://user-images.githubusercontent.com/70506921/131011772-1ee3ad3b-4ad4-4b2f-86ca-469234616f3a.jpg" width="350" height="200" margin="5"/> <img src="https://user-images.githubusercontent.com/70506921/131011762-b4a5e378-464b-44b9-8308-a1e94d3069c8.jpg" width="350" height="200"/>
 <img src="https://user-images.githubusercontent.com/70506921/131011769-3f1e986a-9c9c-4523-97e9-f18bd4ac5127.jpg" width="350" height="200" margin="5"/> <img src="https://user-images.githubusercontent.com/70506921/131011776-686a98b6-dd65-47f6-b16a-36012450b847.jpg" width="350" height="200"/>
@@ -40,27 +40,27 @@ pyinstaller --windowed ^
 1. Excute "LookOutYourWindows.exe".
 
 
-2. Press 'Browse' button and select an image.
+2. Press the 'Browse' button and select an image.
 
 
-3. Press 'Start' button and select save folder. If you want to save the image and folder, press a checkbox.
+3. Press the 'Start' button and select save folder. If you want to save the image and folder, press a checkbox.
 
 
-4. Press 'OK' button to create images.
+4. Press  the 'OK' button to create images.
 
 
-5. If there exist previously created images in the save folder, skip the create process.
+5. If there exist a previously created images in the save folder, skip the create process.
 
 
-6. Until pressing 'Stop' or 'Exit' button, it changes the desktop wallpaper over time.
+6. Before pressing the 'Stop' or 'Exit' button, the process automatically changes the desktop wallpaper in the correct time.
     
 
 - Time slots : 07:00 ~ 13:00, 13:00 ~ 18:00, 18:00 ~ 21:00, 21:00 ~ 07:00
 
 ## Caveats
-- It may be treated as malware in Windows 10, but it is **NEVER** a malware. (Trying to solve this problem)
+- It may be treated as malware in Windows 10, but this software is **NEVER** a malware. (Trying to solve this problem)
 
-- Creating images by CPU needs high CPU utilization, so it could be stuck or spend a long time.
+- Creating images with CPU requries high CPU utilization, so take your time when creating the initial images. (This is only for generating images, once the images are generated, it doesn't require much CPU/RAM resources!)
 
 - If you save the image and folder path, "LookOutYourWindows_SavePath.txt" is created in "c:/Users/user".
 
