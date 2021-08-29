@@ -1,4 +1,4 @@
-import sys, os, ctypes, psutil
+import sys, os, ctypes
 from datetime import datetime
 
 from PyQt5.QtWidgets import QAction, QApplication, QDialog, QFileDialog, QMainWindow, QMenu, QSystemTrayIcon
@@ -15,13 +15,38 @@ save_form = loadUiType("./GUI/SaveGui.ui")[0] # Save Path Select Dialog GUI
 class MainWindow(QMainWindow, main_form):
     def __init__(self):
         super().__init__()
+        
+        # Set Main GUI
         self.setupUi(self)
         self.setWindowTitle("Look Out Your Windows")
         self.setWindowIcon(QIcon("icon.ico"))
 
+        # Set Tray Icon
+        icon = QIcon("icon.ico")
+        self.tray = QSystemTrayIcon()
+        self.tray.setIcon(icon)
+        self.tray.setVisible(True)
+        self.tray.activated.connect(self.onTrayIconActivated)
+
+        # Creating the options
+        menu = QMenu()
+
+        # To open the window
+        _open = QAction("Open")
+        _open.triggered.connect(self.show)
+        menu.addAction(_open)
+
+        # To quit the app
+        _quit = QAction("Quit")
+        _quit.triggered.connect(QCoreApplication.instance().quit)
+        menu.addAction(_quit)
+        
+        # Adding options to system tray
+        self.tray.setContextMenu(menu)
+
         # Load the image and save path from file
         try:
-            f = open(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt", "r")
+            f = open("./LookOutYourWindows_SavePath.txt", "r")
             self.image_path = (f.readline()).rstrip('\n')
             self.image_name = (f.readline()).rstrip('\n')
             self.save_path = (f.readline()).rstrip('\n')
@@ -53,7 +78,8 @@ class MainWindow(QMainWindow, main_form):
     # Load select image and show it
     def loadImageFromFile(self, filepath):
         self.qPixmapFile = QPixmap()
-        self.qPixmapFile.load(filepath)
+        self.qPixmapFile.load(filepath) # Raise "qt.gui.icc: fromIccProfile: failed minimal tag size sanity" but no problem occurs
+        self.inference_size = min(self.qPixmapFile.height(), self.qPixmapFile.width()) // 4 # To retain the original size of the image
         self.qPixmapFile = self.qPixmapFile.scaledToHeight(261)
         self.qPixmapFile = self.qPixmapFile.scaledToWidth(441)
         self.lbl_image.setPixmap(self.qPixmapFile)
@@ -117,7 +143,7 @@ class MainWindow(QMainWindow, main_form):
     def stop(self):
         # Terminate thread if images are generating.
         try:
-            self.infer_thread.stop()
+            self.infer_thread.terminate()
         except:
             pass
 
@@ -139,6 +165,12 @@ class MainWindow(QMainWindow, main_form):
             ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, self.save_path + "/" + self.image_name + "_to_evening.jpg", 0)
         else:
             ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, self.save_path + "/" + self.image_name + "_to_night.jpg", 0)
+
+    # Show main window when user double-clicks the tray icon
+    def onTrayIconActivated(self, reason):
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.show()
+            
 
 # Dialog for save path
 class SaveDialog(QDialog, save_form):
@@ -170,14 +202,14 @@ class SaveDialog(QDialog, save_form):
         # Save the save path as text file
         if self.chkbox_save.isChecked():
             if self.save_path:
-                f = open(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt", "w")
+                f = open("./LookOutYourWindows_SavePath.txt", "w")
                 f.write(self.image_path + "\n")
                 f.write(self.image_name + "\n")
                 f.write(self.save_path)
                 f.close()
         else:
-            if os.path.exists(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt"):
-                os.remove(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt")
+            if os.path.exists("./LookOutYourWindows_SavePath.txt"):
+                os.remove("./LookOutYourWindows_SavePath.txt")
 
         self.close()
 
@@ -193,30 +225,26 @@ class InferThread(QThread):
     def __init__(self, parent):
         super().__init__(parent)
         
-        # Reduce CPU priority to avoid stuck
-        p = psutil.Process(os.getpid())
-        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
-
         self.image_path = parent.image_path
         self.save_path = parent.save_path
+        
+        # Set inference size 
+        self.inference_size = parent.inference_size
     
     # Run thread
     def run(self):
         try:
-            os.environ["OMP_NUM_THREADS"] = "1"
             infer(data_dir=self.image_path, style_dir="./images/styles/", \
                     cfg_path="./configs/daytime.yaml", \
                     weight_path="./trained_models/generator/daytime.pt", \
                     enh_weights_path="./trained_models/enhancer/enhancer.pth", \
+                    inference_size= self.inference_size, \
                     output_dir=self.save_path)
             self.infer_finished.emit()
+
         except Exception as e:
             print(e)
             self.infer_failed.emit()
-
-    # Stop thread
-    def stop(self):
-        self.terminate()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -225,29 +253,5 @@ if __name__ == '__main__':
 
     # Set Tray System
     app.setQuitOnLastWindowClosed(False)
-
-    # Adding an icon
-    icon = QIcon("icon.ico")
-    
-    # Adding item on the menu bar
-    tray = QSystemTrayIcon()
-    tray.setIcon(icon)
-    tray.setVisible(True)
-    
-    # Creating the options
-    menu = QMenu()
-    
-    # To open the window
-    _open = QAction("Open")
-    _open.triggered.connect(main_window.show)
-    menu.addAction(_open)
-
-    # To quit the app
-    _quit = QAction("Quit")
-    _quit.triggered.connect(app.quit)
-    menu.addAction(_quit)
-    
-    # Adding options to system tray
-    tray.setContextMenu(menu)
 
     sys.exit(app.exec())
