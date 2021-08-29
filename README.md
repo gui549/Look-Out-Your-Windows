@@ -56,14 +56,14 @@ pyinstaller --windowed ^
     
 7. If you press the 'X' button in the upper right corner, it will be executed in the system tray.
 
-$~~~~~~~~~~~~~$<img src="https://user-images.githubusercontent.com/70506921/131242206-f334f748-dd30-409b-8966-860e20551d24.png">
+&nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp; <img src="https://user-images.githubusercontent.com/70506921/131242206-f334f748-dd30-409b-8966-860e20551d24.png">
 
 
 ### FYI)
 
 - Choose a preferred fit for your image.
 
-$~~~~~~~~~~~$<img src="https://user-images.githubusercontent.com/70506921/131244213-e049dd7a-25c6-4b8e-9404-e8e16a76197f.gif">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://user-images.githubusercontent.com/70506921/131244213-e049dd7a-25c6-4b8e-9404-e8e16a76197f.gif">
 
 
 - Time slots : 07:00 ~ 13:00, 13:00 ~ 18:00, 18:00 ~ 21:00, 21:00 ~ 07:00
