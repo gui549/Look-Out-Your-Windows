@@ -7,3 +7,4 @@ winvenv
 Docker
 dist
 build
+.spec
