@@ -1,8 +1,7 @@
 import glob
 import os
-import pdb
 
-import torch, psutil
+import torch
 from torchvision import transforms
 
 from hidt.networks.enhancement.RRDBNet_arch import RRDBNet
@@ -17,10 +16,6 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
     if device == 'cpu':
         # Set the maximum number of threads
         os.environ["OMP_NUM_THREADS"] = "1"
-        
-        # Reduce the process priority to avoid stuck
-        p = psutil.Process(os.getpid())
-        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
 
     style_transformer = StyleTransformer(cfg_path, weight_path,
                                          inference_size=inference_size,
@@ -48,7 +43,7 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
         crop_transform = GridCrop(4, 1, hires_size=inference_size * 4)
         
         source_name = source_images_path[0].split('/')[-1].split('.')[0]
-        
+
         for i, style_img_pil in enumerate(style_images_pil): # list of style tensors
             styles_decomposition = style_transformer.get_style([style_img_pil]) # styles_decomposition = [{"style" : * X 1 X 1 style tensor}]
 

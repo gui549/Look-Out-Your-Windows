@@ -6,10 +6,11 @@ Create a __Time-varying__ Wallpaper for your Windows/UNIX device!
 <img src="https://user-images.githubusercontent.com/70506921/131011769-3f1e986a-9c9c-4523-97e9-f18bd4ac5127.jpg" width="350" height="200" margin="5"/> <img src="https://user-images.githubusercontent.com/70506921/131011776-686a98b6-dd65-47f6-b16a-36012450b847.jpg" width="350" height="200"/>
 
 ## Installation
-**Method 1.**
+
+### Method 1.
 - Download zip file from release.
 
-**Method 2.**
+### Method 2.
 - Clone this repository.
 
 - Install the requirements.
@@ -17,20 +18,21 @@ Create a __Time-varying__ Wallpaper for your Windows/UNIX device!
 pip install -r requirements.txt
 ```
 
-- Make exe file using Pyinstaller.
+- Make exe file using Pyinstaller.   
+###### For Windows
 ```
 pyinstaller --windowed ^
             --name=LookOutYourWindows ^
             --icon=.\icon.ico ^
             --paths=c:\Users\user\Desktop\HiDT\Look-Out-Your-Windows\venv\Lib\site-packages ^
             --add-binary "icon.ico;." ^
-            --add-binary "images/styles/morning.jpg;image/styles" ^
-            --add-binary "images/styles/afternoon.jpg;image/styles" ^
-            --add-binary "images/styles/evening.jpg;image/styles" ^
-            --add-binary "images/styles/night.jpg;image/styles" ^
+            --add-binary "images/styles/morning.jpg;images/styles" ^
+            --add-binary "images/styles/afternoon.jpg;images/styles" ^
+            --add-binary "images/styles/evening.jpg;images/styles" ^
+            --add-binary "images/styles/night.jpg;images/styles" ^
             --add-data "GUI/MainGui.ui;GUI" ^
             --add-data "GUI/SaveGui.ui;GUI" ^
-            --add-data "configs/daytime.yaml;config" ^
+            --add-data "configs/daytime.yaml;configs" ^
             --add-data "trained_models/enhancer/enhancer.pth;trained_models/enhancer" ^
             --add-data "trained_models/generator/daytime.pt;trained_models/generator" ^
             WindowsGui.py
@@ -60,7 +62,7 @@ pyinstaller --windowed ^
 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp; <img src="https://user-images.githubusercontent.com/70506921/131242206-f334f748-dd30-409b-8966-860e20551d24.png">
 
 
-### FYI)
+> ### FYI)
 
 - Choose your preferred fit for the image.
 

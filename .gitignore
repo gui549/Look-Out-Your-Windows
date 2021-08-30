@@ -7,4 +7,5 @@ winvenv
 Docker
 dist
 build
-.spec
+*.spec
+LookOutYourWindows_SavePath.txt

@@ -1,10 +1,11 @@
-import sys, os, ctypes
+import sys, os, ctypes, psutil, traceback
 from datetime import datetime
 
-from PyQt5.QtWidgets import QAction, QApplication, QDialog, QFileDialog, QMainWindow, QMenu, QSystemTrayIcon
+from PyQt5.QtCore import QCoreApplication, QThread, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import *
 from PyQt5.uic import loadUiType
-from PyQt5.QtCore import QCoreApplication, QThread, QTimer, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QDialog, QFileDialog, \
+                            QMainWindow, QMenu, QSystemTrayIcon, QErrorMessage
 
 from HiDT_module import infer
 
@@ -20,29 +21,6 @@ class MainWindow(QMainWindow, main_form):
         self.setupUi(self)
         self.setWindowTitle("Look Out Your Windows")
         self.setWindowIcon(QIcon("icon.ico"))
-
-        # Set Tray Icon
-        icon = QIcon("icon.ico")
-        self.tray = QSystemTrayIcon()
-        self.tray.setIcon(icon)
-        self.tray.setVisible(True)
-        self.tray.activated.connect(self.onTrayIconActivated)
-
-        # Creating the options
-        menu = QMenu()
-
-        # To open the window
-        _open = QAction("Open")
-        _open.triggered.connect(self.show)
-        menu.addAction(_open)
-
-        # To quit the app
-        _quit = QAction("Quit")
-        _quit.triggered.connect(QCoreApplication.instance().quit)
-        menu.addAction(_quit)
-        
-        # Adding options to system tray
-        self.tray.setContextMenu(menu)
 
         # Load the image and save path from file
         try:
@@ -65,7 +43,7 @@ class MainWindow(QMainWindow, main_form):
 
     # Open file explorer to browse image and set file path
     def browse_files(self):
-        self.image_path = QFileDialog.getOpenFileName(self, "Open File", './', "Images (*.png, *.jpg)")[0]
+        self.image_path = QFileDialog.getOpenFileName(self, "Open File", './', "Images (*.png *.jpg)")[0]
         if not self.image_path:
             return
     
@@ -127,11 +105,20 @@ class MainWindow(QMainWindow, main_form):
             self.work()
 
     # Handling if creating images fail
-    def fail(self):
+    @pyqtSlot(str)
+    def fail(self, error):
         self.lbl_status.setText("Status: Failed to create")
         self.btn_start.show()
         self.btn_stop.hide()
         self.btn_browse.setEnabled(True)
+
+        # Pop-up a new dialog to show an error message
+        error_dialog = QErrorMessage()
+        error_dialog.setWindowTitle("Error Message")
+        error_dialog.setWindowIcon(QIcon("icon.ico"))
+        error_dialog.showMessage(error)
+        error_dialog.exec()
+
 
     # Start setting wallpaper
     def work(self):
@@ -146,7 +133,7 @@ class MainWindow(QMainWindow, main_form):
             self.infer_thread.terminate()
         except:
             pass
-
+        
         self.lbl_status.setText("Status: Waiting")
         self.btn_start.show()
         self.btn_stop.hide()
@@ -165,11 +152,6 @@ class MainWindow(QMainWindow, main_form):
             ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, self.save_path + "/" + self.image_name + "_to_evening.jpg", 0)
         else:
             ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, self.save_path + "/" + self.image_name + "_to_night.jpg", 0)
-
-    # Show main window when user double-clicks the tray icon
-    def onTrayIconActivated(self, reason):
-        if reason == QSystemTrayIcon.DoubleClick:
-            self.show()
             
 
 # Dialog for save path
@@ -220,7 +202,7 @@ class SaveDialog(QDialog, save_form):
 # Thread to infer images
 class InferThread(QThread):
     infer_finished = pyqtSignal()
-    infer_failed = pyqtSignal()
+    infer_failed = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -233,6 +215,10 @@ class InferThread(QThread):
     
     # Run thread
     def run(self):
+        # Reduce the process priority to avoid stuck
+        p = psutil.Process(os.getpid())
+        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+        
         try:
             infer(data_dir=self.image_path, style_dir="./images/styles/", \
                     cfg_path="./configs/daytime.yaml", \
@@ -243,8 +229,23 @@ class InferThread(QThread):
             self.infer_finished.emit()
 
         except Exception as e:
-            print(e)
-            self.infer_failed.emit()
+            self.infer_failed.emit(repr(traceback.format_exc()))
+
+class SystemTrayIcon(QSystemTrayIcon):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+        # Set Tray Icon
+        self.setIcon(QIcon("icon.ico"))
+        self.setVisible(True)
+        self.activated.connect(self.onTrayIconActivated)
+    
+    # Show main window when user double-clicks the tray icon
+    def onTrayIconActivated(self, reason):
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.parent.show()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -253,5 +254,22 @@ if __name__ == '__main__':
 
     # Set Tray System
     app.setQuitOnLastWindowClosed(False)
+    tray_icon = SystemTrayIcon(main_window)
+
+    # Creating the options
+    menu = QMenu()
+
+    # To open the window
+    _open = QAction("Open")
+    _open.triggered.connect(main_window.show)
+    menu.addAction(_open)
+
+    # To quit the app
+    _quit = QAction("Quit")
+    _quit.triggered.connect(QCoreApplication.instance().quit)
+    menu.addAction(_quit)
+    
+    # Adding options to system tray
+    tray_icon.setContextMenu(menu)
 
     sys.exit(app.exec())
