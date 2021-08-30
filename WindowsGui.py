@@ -43,7 +43,7 @@ class MainWindow(QMainWindow, main_form):
 
     # Open file explorer to browse image and set file path
     def browse_files(self):
-        self.image_path = QFileDialog.getOpenFileName(self, "Open File", './', "Images (*.png *.jpg)")[0]
+        self.image_path = QFileDialog.getOpenFileName(self, "Open File", './', "Images (*.png *.jpg *.jpeg)")[0]
         if not self.image_path:
             return
     
@@ -51,7 +51,8 @@ class MainWindow(QMainWindow, main_form):
         self.loadImageFromFile(self.image_path)
         
         base = os.path.basename(self.image_path)
-        self.image_name = os.path.splitext(base)[0] # Save the image name
+        file_extension = '.' + base.split('.')[-1]
+        self.image_name = base.split(file_extension)[0] # Save the image name
 
     # Load select image and show it
     def loadImageFromFile(self, filepath):
