@@ -76,8 +76,6 @@ pyinstaller --windowed ^
 
 - Creating images with CPU requries high CPU utilization and memory resources, so take your time when creating the initial images. (This is only for generating images, once the images are generated, it doesn't require much CPU/RAM resources!)
 
-- If you save the image and folder path, "LookOutYourWindows_SavePath.txt" is created in "c:/Users/user".
-
 ## Rooms for improvement
 - Select the resolution of the generated images.
 
