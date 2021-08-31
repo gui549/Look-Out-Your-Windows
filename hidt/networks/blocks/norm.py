@@ -3,9 +3,8 @@ __all__ = ['AdaptiveInstanceNorm2d',
            ]
 
 import torch
-import torch.nn.functional as F
+from torch.nn.functional import batch_norm
 from torch import nn
-from torch.nn import Parameter
 
 
 ##################################################################################
@@ -34,7 +33,7 @@ class AdaptiveInstanceNorm2d(nn.Module):
         # Apply instance norm
         x_reshaped = x.contiguous().view(1, b * c, *x.size()[2:])
 
-        out = F.batch_norm(
+        out = batch_norm(
             x_reshaped, running_mean, running_var, self.weight, self.bias,
             True, self.momentum, self.eps)
 

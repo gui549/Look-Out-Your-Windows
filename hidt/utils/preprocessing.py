@@ -3,8 +3,8 @@ from typing import List
 
 import numpy as np
 import torch
-import torch.nn.functional as F
-import torchvision.transforms as transforms
+from torch.nn.functional import interpolate
+from torchvision.transforms import Grayscale, Resize, Lambda, RandomCrop, RandomHorizontalFlip, ToTensor, Normalize, Compose
 from PIL import Image
 
 RESIZE_BASE = 16
@@ -60,51 +60,51 @@ def get_params(opt, size):
 def get_transform(params, method=Image.BICUBIC, convert=True):
     transform_list = []
     if params['color_space'] == 'grayscale':
-        transform_list.append(transforms.Grayscale(1))
+        transform_list.append(Grayscale(1))
     if 'resize' in params['preprocess']:
         osize = [params['load_size'], params['load_size']]
-        transform_list.append(transforms.Resize(osize, method))
+        transform_list.append(Resize(osize, method))
     elif 'scale_width' in params['preprocess']:
-        transform_list.append(transforms.Lambda(lambda img: __scale_width(img, params['load_size'], method)))
+        transform_list.append(Lambda(lambda img: __scale_width(img, params['load_size'], method)))
     elif 'scale_shorter_side' in params['preprocess']:
-        transform_list.append(transforms.Lambda(lambda img: __scale(img,
+        transform_list.append(Lambda(lambda img: __scale(img,
                                                                     params['new_size'][0],
                                                                     params['new_size'][1], method)))
     elif 'scale_load_shorter_side' in params['preprocess']:
-        transform_list.append(transforms.Lambda(lambda img: __scale_shorter(img,
+        transform_list.append(Lambda(lambda img: __scale_shorter(img,
                                                                             params['load_size'], method)))
 
     if 'crop' in params['preprocess']:
         if params is None:
-            transform_list.append(transforms.RandomCrop((params['crop_image_width'], params['crop_image_height'])))
+            transform_list.append(RandomCrop((params['crop_image_width'], params['crop_image_height'])))
         else:
-            transform_list.append(transforms.Lambda(lambda img: __crop(img, params['crop_pos'],
+            transform_list.append(Lambda(lambda img: __crop(img, params['crop_pos'],
                                                                        params['crop_image_width'],
                                                                        params['crop_image_height'])))
 
     if params['preprocess'] == 'none':
-        transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base=RESIZE_BASE, method=method)))
+        transform_list.append(Lambda(lambda img: __make_power_2(img, base=RESIZE_BASE, method=method)))
 
     if not params['no_flip']:
         if params is None:
-            transform_list.append(transforms.RandomHorizontalFlip())
+            transform_list.append(RandomHorizontalFlip())
         elif params.get('flip', False):
-            transform_list.append(transforms.Lambda(lambda img: __flip(img, params['flip'])))
+            transform_list.append(Lambda(lambda img: __flip(img, params['flip'])))
 
     if convert:
         if params['color_space'] == 'labeled':
             transform_list += [
-                transforms.Lambda(lambda x: torch.tensor([np.array(x)])[:, :, :, 0].type(torch.LongTensor))]
+                Lambda(lambda x: torch.tensor([np.array(x)])[:, :, :, 0].type(torch.LongTensor))]
         else:
-            transform_list += [transforms.ToTensor()]
+            transform_list += [ToTensor()]
             if params['dequantization']:
-                transform_list += [transforms.Lambda(lambda x: __dequantization(x))]
+                transform_list += [Lambda(lambda x: __dequantization(x))]
             if params['color_space'] == 'grayscale':
-                transform_list += [transforms.Normalize((0.5,), (0.5,))]
+                transform_list += [Normalize((0.5,), (0.5,))]
             else:
-                transform_list += [transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+                transform_list += [Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
 
-    return transforms.Compose(transform_list)
+    return Compose(transform_list)
 
 
 def transform_with_color_space(img, transform_params, color_space):
@@ -130,8 +130,8 @@ class GridCrop:
     def __init__(self, pad=4, stride=1, hires_size=1024):
         self.pad = pad
         self.stride = stride
-        self.initial_transform = transforms.Resize(hires_size + 4)
-        self.final_transform = transforms.Resize(hires_size // 4)
+        self.initial_transform = Resize(hires_size + 4)
+        self.final_transform = Resize(hires_size // 4)
 
     def __call__(self, initial_image):
         output = []
@@ -145,13 +145,13 @@ class GridCrop:
 
 
 def enhancement_preprocessing(transferred_crops: List[torch.Tensor], normalize: bool = True) -> torch.Tensor:
-    enh_norm = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    enh_norm = Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     padded_stack = []
     for idx, transferred_crop in enumerate(transferred_crops):
         hor_idx = idx // 4
         vert_idx = idx % 4
         c, w, h = transferred_crop.shape
-        padded_image = __padd_with_idxs(F.interpolate(transferred_crop[None, :, :, :],
+        padded_image = __padd_with_idxs(interpolate(transferred_crop[None, :, :, :],
                                                       size=(int(w * 4),
                                                             int(h * 4)),
                                                       mode='nearest'),
@@ -160,7 +160,7 @@ def enhancement_preprocessing(transferred_crops: List[torch.Tensor], normalize: 
                                         pad=4)
         if normalize:
             padded_image = enh_norm(padded_image[0]).unsqueeze(0)
-        padded_image = F.interpolate(padded_image,
+        padded_image = interpolate(padded_image,
                                      (w, h),
                                      mode='nearest')
         padded_stack.append(padded_image)
