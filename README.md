@@ -60,7 +60,7 @@ pyinstaller --windowed ^
 ## Caveats
 - It may be treated as malware in Windows 10, but this software is **NEVER** a malware. (Trying to solve this problem)
 
-- Creating images with CPU requries high CPU utilization, so take your time when creating the initial images. (This is only for generating images, once the images are generated, it doesn't require much CPU/RAM resources!)
+- Creating images with CPU requires high CPU utilization, so take your time when creating the initial images. (This is only for generating images, once the images are generated, it doesn't require much CPU/RAM resources!)
 
 - If you save the image and folder path, "LookOutYourWindows_SavePath.txt" is created in "c:/Users/user".
 
