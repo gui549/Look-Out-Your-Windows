@@ -1,9 +1,9 @@
 import argparse
 import glob
-import os
+import os.path
 
 import torch
-from torchvision import transforms
+from torchvision.transforms import ToPILImage
 from tqdm import tqdm
 
 from hidt.networks.enhancement.RRDBNet_arch import RRDBNet

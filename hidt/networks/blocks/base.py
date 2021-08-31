@@ -5,8 +5,10 @@ __all__ = ['Conv2dBlock',
            'FUNITConv2dBlock'
            ]
 
-import numpy as np
-import torch.nn.functional as F
+# import numpy as np
+from numpy import prod
+# import torch.nn.functional as F
+from torch.nn.functional import conv2d
 from torch import nn
 
 from hidt.networks.blocks.norm import LayerNorm, AdaptiveInstanceNorm2d
@@ -176,7 +178,7 @@ class Conv2dBlock(nn.Module):
             self._get_norm(self.norm_after_conv, norm_dim)
             self.dim = output_dim, input_dim, kernel_size, kernel_size
             self.stride = stride
-            self.mlp_kernel = nn.Linear(self.style_dim, int(np.prod(self.dim)))
+            self.mlp_kernel = nn.Linear(self.style_dim, int(prod(self.dim)))
             self.mlp_bias = nn.Linear(self.style_dim, output_dim)
         else:
             assert 0, "Unsupported normalization: {}".format(norm)
@@ -223,7 +225,7 @@ class Conv2dBlock(nn.Module):
         if self.compute_kernel:
             conv_kernel = self.mlp_kernel(self.style)
             conv_bias = self.mlp_bias(self.style)
-            x = F.conv2d(self.pad(x), conv_kernel.view(*self.dim), conv_bias.view(-1), self.stride)
+            x = conv2d(self.pad(x), conv_kernel.view(*self.dim), conv_bias.view(-1), self.stride)
         else:
             x = self.conv(self.pad(x))
         if self.WCT:

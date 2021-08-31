@@ -1,12 +1,12 @@
 import logging
-import math
-import os
-import time
+from math import sqrt
+import os.path
+from os import listdir
+from time import time
 
 import torch
 import torch.nn.init as init
 import torch.nn as nn
-from typing import Iterable
 
 logger = logging.getLogger(__name__)
 
@@ -25,16 +25,16 @@ class Timer:
         self.start_time = None
 
     def __enter__(self):
-        self.start_time = time.time()
+        self.start_time = time()
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        logger.info(self.msg % (time.time() - self.start_time))
+        logger.info(self.msg % (time() - self.start_time))
 
 
 def get_latest_model_name(dirname, name):
     if os.path.exists(dirname) is False:
         return None
-    files = [os.path.join(dirname, f) for f in os.listdir(dirname) if
+    files = [os.path.join(dirname, f) for f in listdir(dirname) if
              os.path.isfile(os.path.join(dirname, f)) and f.startswith('model.') and f.endswith('.pt') and name in f]
     if not len(files):
         return None
@@ -49,11 +49,11 @@ def weights_init(init_type='gaussian'):
             if init_type == 'gaussian':
                 init.normal_(module.weight.data, 0.0, 0.02)
             elif init_type == 'xavier':
-                init.xavier_normal_(module.weight.data, gain=math.sqrt(2))
+                init.xavier_normal_(module.weight.data, gain=sqrt(2))
             elif init_type == 'kaiming':
                 init.kaiming_normal_(module.weight.data, a=0, mode='fan_in')
             elif init_type == 'orthogonal':
-                init.orthogonal_(module.weight.data, gain=math.sqrt(2))
+                init.orthogonal_(module.weight.data, gain=sqrt(2))
             elif init_type == 'default':
                 pass
             else:

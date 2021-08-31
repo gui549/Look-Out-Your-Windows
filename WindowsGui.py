@@ -1,10 +1,11 @@
-import sys, os, ctypes, psutil
+import sys, os, ctypes, psutil, traceback
 from datetime import datetime
 
-from PyQt5.QtWidgets import QAction, QApplication, QDialog, QFileDialog, QMainWindow, QMenu, QSystemTrayIcon
+from PyQt5.QtCore import QCoreApplication, QThread, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import *
 from PyQt5.uic import loadUiType
-from PyQt5.QtCore import QCoreApplication, QThread, QTimer, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QDialog, QFileDialog, \
+                            QMainWindow, QMenu, QSystemTrayIcon, QErrorMessage
 
 from HiDT_module import infer
 
@@ -15,13 +16,15 @@ save_form = loadUiType("./GUI/SaveGui.ui")[0] # Save Path Select Dialog GUI
 class MainWindow(QMainWindow, main_form):
     def __init__(self):
         super().__init__()
+        
+        # Set Main GUI
         self.setupUi(self)
         self.setWindowTitle("Look Out Your Windows")
         self.setWindowIcon(QIcon("icon.ico"))
 
         # Load the image and save path from file
         try:
-            f = open(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt", "r")
+            f = open("./LookOutYourWindows_SavePath.txt", "r")
             self.image_path = (f.readline()).rstrip('\n')
             self.image_name = (f.readline()).rstrip('\n')
             self.save_path = (f.readline()).rstrip('\n')
@@ -40,7 +43,7 @@ class MainWindow(QMainWindow, main_form):
 
     # Open file explorer to browse image and set file path
     def browse_files(self):
-        self.image_path = QFileDialog.getOpenFileName(self, "Open File", './', "Images (*.png, *.jpg)")[0]
+        self.image_path = QFileDialog.getOpenFileName(self, "Open File", './', "Images (*.png *.jpg *.jpeg)")[0]
         if not self.image_path:
             return
     
@@ -48,12 +51,14 @@ class MainWindow(QMainWindow, main_form):
         self.loadImageFromFile(self.image_path)
         
         base = os.path.basename(self.image_path)
-        self.image_name = os.path.splitext(base)[0] # Save the image name
+        file_extension = '.' + base.split('.')[-1]
+        self.image_name = base.split(file_extension)[0] # Save the image name
 
     # Load select image and show it
     def loadImageFromFile(self, filepath):
         self.qPixmapFile = QPixmap()
-        self.qPixmapFile.load(filepath)
+        self.qPixmapFile.load(filepath) # Raise "qt.gui.icc: fromIccProfile: failed minimal tag size sanity" but no problem occurs
+        self.inference_size = min(self.qPixmapFile.height(), self.qPixmapFile.width()) // 4 # To retain the original size of the image
         self.qPixmapFile = self.qPixmapFile.scaledToHeight(261)
         self.qPixmapFile = self.qPixmapFile.scaledToWidth(441)
         self.lbl_image.setPixmap(self.qPixmapFile)
@@ -101,11 +106,20 @@ class MainWindow(QMainWindow, main_form):
             self.work()
 
     # Handling if creating images fail
-    def fail(self):
+    @pyqtSlot(str)
+    def fail(self, error):
         self.lbl_status.setText("Status: Failed to create")
         self.btn_start.show()
         self.btn_stop.hide()
         self.btn_browse.setEnabled(True)
+
+        # Pop-up a new dialog to show an error message
+        error_dialog = QErrorMessage()
+        error_dialog.setWindowTitle("Error Message")
+        error_dialog.setWindowIcon(QIcon("icon.ico"))
+        error_dialog.showMessage(error)
+        error_dialog.exec()
+
 
     # Start setting wallpaper
     def work(self):
@@ -117,10 +131,10 @@ class MainWindow(QMainWindow, main_form):
     def stop(self):
         # Terminate thread if images are generating.
         try:
-            self.infer_thread.stop()
+            self.infer_thread.terminate()
         except:
             pass
-
+        
         self.lbl_status.setText("Status: Waiting")
         self.btn_start.show()
         self.btn_stop.hide()
@@ -139,6 +153,7 @@ class MainWindow(QMainWindow, main_form):
             ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, self.save_path + "/" + self.image_name + "_to_evening.jpg", 0)
         else:
             ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, self.save_path + "/" + self.image_name + "_to_night.jpg", 0)
+            
 
 # Dialog for save path
 class SaveDialog(QDialog, save_form):
@@ -170,14 +185,14 @@ class SaveDialog(QDialog, save_form):
         # Save the save path as text file
         if self.chkbox_save.isChecked():
             if self.save_path:
-                f = open(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt", "w")
+                f = open("./LookOutYourWindows_SavePath.txt", "w")
                 f.write(self.image_path + "\n")
                 f.write(self.image_name + "\n")
                 f.write(self.save_path)
                 f.close()
         else:
-            if os.path.exists(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt"):
-                os.remove(os.path.expanduser("~") + "/" + "LookOutYourWindows_SavePath.txt")
+            if os.path.exists("./LookOutYourWindows_SavePath.txt"):
+                os.remove("./LookOutYourWindows_SavePath.txt")
 
         self.close()
 
@@ -188,35 +203,50 @@ class SaveDialog(QDialog, save_form):
 # Thread to infer images
 class InferThread(QThread):
     infer_finished = pyqtSignal()
-    infer_failed = pyqtSignal()
+    infer_failed = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__(parent)
         
-        # Reduce CPU priority to avoid stuck
-        p = psutil.Process(os.getpid())
-        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
-
         self.image_path = parent.image_path
         self.save_path = parent.save_path
+        
+        # Set inference size 
+        self.inference_size = parent.inference_size
     
     # Run thread
     def run(self):
+        # Reduce the process priority to avoid stuck
+        p = psutil.Process(os.getpid())
+        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+        
         try:
-            os.environ["OMP_NUM_THREADS"] = "1"
             infer(data_dir=self.image_path, style_dir="./images/styles/", \
                     cfg_path="./configs/daytime.yaml", \
                     weight_path="./trained_models/generator/daytime.pt", \
                     enh_weights_path="./trained_models/enhancer/enhancer.pth", \
+                    inference_size= self.inference_size, \
                     output_dir=self.save_path)
             self.infer_finished.emit()
-        except Exception as e:
-            print(e)
-            self.infer_failed.emit()
 
-    # Stop thread
-    def stop(self):
-        self.terminate()
+        except Exception as e:
+            self.infer_failed.emit(repr(traceback.format_exc()))
+
+class SystemTrayIcon(QSystemTrayIcon):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+        # Set Tray Icon
+        self.setIcon(QIcon("icon.ico"))
+        self.setVisible(True)
+        self.activated.connect(self.onTrayIconActivated)
+    
+    # Show main window when user double-clicks the tray icon
+    def onTrayIconActivated(self, reason):
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.parent.show()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -225,18 +255,11 @@ if __name__ == '__main__':
 
     # Set Tray System
     app.setQuitOnLastWindowClosed(False)
+    tray_icon = SystemTrayIcon(main_window)
 
-    # Adding an icon
-    icon = QIcon("icon.ico")
-    
-    # Adding item on the menu bar
-    tray = QSystemTrayIcon()
-    tray.setIcon(icon)
-    tray.setVisible(True)
-    
     # Creating the options
     menu = QMenu()
-    
+
     # To open the window
     _open = QAction("Open")
     _open.triggered.connect(main_window.show)
@@ -244,10 +267,10 @@ if __name__ == '__main__':
 
     # To quit the app
     _quit = QAction("Quit")
-    _quit.triggered.connect(app.quit)
+    _quit.triggered.connect(QCoreApplication.instance().quit)
     menu.addAction(_quit)
     
     # Adding options to system tray
-    tray.setContextMenu(menu)
+    tray_icon.setContextMenu(menu)
 
     sys.exit(app.exec())

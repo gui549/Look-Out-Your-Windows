@@ -4,13 +4,13 @@ pyinstaller --windowed ^
             --icon=.\icon.ico ^
             --paths=c:\Users\user\Desktop\HiDT\Look-Out-Your-Windows\venv\Lib\site-packages ^
             --add-binary "icon.ico;." ^
-            --add-binary "images/styles/morning.jpg;image/styles" ^
-            --add-binary "images/styles/afternoon.jpg;image/styles" ^
-            --add-binary "images/styles/evening.jpg;image/styles" ^
-            --add-binary "images/styles/night.jpg;image/styles" ^
+            --add-binary "images/styles/morning.jpg;images/styles" ^
+            --add-binary "images/styles/afternoon.jpg;images/styles" ^
+            --add-binary "images/styles/evening.jpg;images/styles" ^
+            --add-binary "images/styles/night.jpg;images/styles" ^
             --add-data "GUI/MainGui.ui;GUI" ^
             --add-data "GUI/SaveGui.ui;GUI" ^
-            --add-data "configs/daytime.yaml;config" ^
+            --add-data "configs/daytime.yaml;configs" ^
             --add-data "trained_models/enhancer/enhancer.pth;trained_models/enhancer" ^
             --add-data "trained_models/generator/daytime.pt;trained_models/generator" ^
             WindowsGui.py

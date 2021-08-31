@@ -1,6 +1,6 @@
 __all__ = ['GeneratorBase']
 
-import copy
+from copy import deepcopy
 import logging
 
 from torch import nn
@@ -21,7 +21,7 @@ class GeneratorBase(nn.Module):
 
     def _init_modules(self, params):
         for module_name, module_config in params.items():
-            module_config_copy = copy.deepcopy(module_config)
+            module_config_copy = deepcopy(module_config)
             architecture = module_config_copy.pop('architecture')
             frozen = module_config_copy.pop('frozen', False)
 

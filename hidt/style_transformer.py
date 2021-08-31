@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import List, Union
 
 import torch
-import torchvision.transforms.functional as TF
+from torchvision.transforms.functional import to_pil_image
 from PIL import Image
 from torchvision import transforms
 
@@ -171,7 +171,7 @@ class StyleTransformer:
         for image_batch in image_tensors:
             image_batch = image_batch * 0.5 + 0.5
             for trans_tensor in image_batch:
-                images.append(TF.to_pil_image(trans_tensor.cpu()))
+                images.append(to_pil_image(trans_tensor.cpu()))
 
         return images
 
@@ -208,7 +208,7 @@ class StyleTransformer:
                                                                   batch_size=batch_size,
                                                                   )[0] * 0.5 + 0.5
                 for trans_tensor in translated_tensors.unbind(0):
-                    batch_translated.append(TF.to_pil_image(trans_tensor.cpu()) if return_pil else trans_tensor)
+                    batch_translated.append(to_pil_image(trans_tensor.cpu()) if return_pil else trans_tensor)
             output_translated.append(batch_translated)
 
         return output_translated

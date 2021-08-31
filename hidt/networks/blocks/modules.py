@@ -3,7 +3,8 @@ __all__ = ['MLP',
            'NormalizeOutput',
            ]
 
-import torch.nn.functional as F
+# import torch.nn.functional as F
+from torch.nn.functional import normalize
 from torch import nn
 
 from hidt.networks.blocks import ResBlock, LinearBlock
@@ -63,4 +64,4 @@ class NormalizeOutput(nn.Module):
         self.p = p
 
     def forward(self, tensor):
-        return F.normalize(tensor, p=self.p, dim=self.dim, eps=self.eps)
+        return normalize(tensor, p=self.p, dim=self.dim, eps=self.eps)
