@@ -84,6 +84,25 @@
     <string> Save this path</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="chkbox_save_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>50</y>
+     <width>61</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>GPU</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

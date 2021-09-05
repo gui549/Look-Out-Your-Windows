@@ -1,9 +1,11 @@
 PyYAML
 pillow
 numpy
-torch
+torch==1.9.0+cu102
 torchvision
 tqdm
 PyQt5
 psutil
 Pyinstaller
+
+~!--find-links https://download.pytorch.org/whl/torch_stable.html

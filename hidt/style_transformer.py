@@ -1,5 +1,6 @@
 from copy import deepcopy
 from typing import List, Union
+from numpy import divide
 
 import torch
 from torchvision.transforms.functional import to_pil_image
@@ -40,7 +41,11 @@ class StyleTransformer:
 
         self.trainer = getattr(trainers, self.config['trainer'])(self.config) # getattr(trainers, config[trainer]) = Trainerbase()
         if checkpoint_path is not None: # load checkpoint state dictionary
-            state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+            if device == 'cpu':
+                state_dict = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+            else:
+                state_dict = torch.load(checkpoint_path)
+                
             state_dict_fixed = dict()
             for key in state_dict:
                 state_dict_fixed[key.replace('module.', '')] = state_dict[key]

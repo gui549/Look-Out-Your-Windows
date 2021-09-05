@@ -1,4 +1,5 @@
-import sys, os, ctypes, psutil, traceback
+import sys, os, ctypes, psutil
+import traceback, torch
 from datetime import datetime
 
 from PyQt5.QtCore import QCoreApplication, QThread, QTimer, pyqtSignal, pyqtSlot
@@ -79,6 +80,9 @@ class MainWindow(QMainWindow, main_form):
             self.save_path = save_dialog.save_path
         else:
             return
+
+        # Check whether to use GPU
+        self.isGPU = save_dialog.isGPU
 
         # Check if there exist generated images before 
         total_files = os.listdir(self.save_path)
@@ -169,6 +173,10 @@ class SaveDialog(QDialog, save_form):
             self.lineedit_savepath.setText(save_path)
             self.chkbox_save.toggle() # Set check box on
 
+        # Check if CUDA is available
+        if torch.cuda.is_available():
+            self.chkbox_GPU.setEnabled(True)
+
         self.btn_browse.clicked.connect(self.browse_files)
         self.btn_ok.clicked.connect(self.ok)
         self.btn_cancel.clicked.connect(self.cancel)
@@ -181,6 +189,7 @@ class SaveDialog(QDialog, save_form):
     # Click OK btn
     def ok(self):
         self.save_path = self.lineedit_savepath.text()
+        self.isGPU = self.chkbox_GPU.isChecked()
 
         # Save the save path as text file
         if self.chkbox_save.isChecked():
@@ -211,22 +220,33 @@ class InferThread(QThread):
         self.image_path = parent.image_path
         self.save_path = parent.save_path
         
+        self.isGPU = parent.isGPU
+
         # Set inference size 
         self.inference_size = parent.inference_size
     
     # Run thread
     def run(self):
-        # Reduce the process priority to avoid stuck
-        p = psutil.Process(os.getpid())
-        p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
-        
         try:
-            infer(data_dir=self.image_path, style_dir="./images/styles/", \
-                    cfg_path="./configs/daytime.yaml", \
-                    weight_path="./trained_models/generator/daytime.pt", \
-                    enh_weights_path="./trained_models/enhancer/enhancer.pth", \
-                    inference_size= self.inference_size, \
-                    output_dir=self.save_path)
+            if self.isGPU:
+                infer(data_dir=self.image_path, style_dir="./images/styles/", \
+                        cfg_path="./configs/daytime.yaml", \
+                        weight_path="./trained_models/generator/daytime.pt", \
+                        enh_weights_path="./trained_models/enhancer/enhancer.pth", \
+                        inference_size= self.inference_size, \
+                        device='cuda', \
+                        batch_size=4, \
+                        output_dir=self.save_path)
+            else:
+                # Reduce the process priority to avoid stuck
+                p = psutil.Process(os.getpid())
+                p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+                infer(data_dir=self.image_path, style_dir="./images/styles/", \
+                        cfg_path="./configs/daytime.yaml", \
+                        weight_path="./trained_models/generator/daytime.pt", \
+                        enh_weights_path="./trained_models/enhancer/enhancer.pth", \
+                        inference_size= self.inference_size, \
+                        output_dir=self.save_path)
             self.infer_finished.emit()
 
         except Exception as e:
