@@ -48,16 +48,19 @@ pyinstaller --windowed ^
 3. Press the 'Start' button and select save folder. If you want to save the image and folder, press a checkbox.
 
 
-4. Press  the 'OK' button to create images.
+4. If you want to use GPU, press a 'GPU' checkbox. (If your GPU is unavailable, the checkbox is not enabled.)
 
 
-5. If there exist a previously created images in the save folder, skip the create process.
+5. Press  the 'OK' button to create images.
 
 
-6. Before pressing the 'Stop' or 'Exit' button, the process automatically changes the desktop wallpaper in the correct time.
+6. If there exist a previously created images in the save folder, skip the create process.
+
+
+7. Before pressing the 'Stop' or 'Exit' button, the process automatically changes the desktop wallpaper in the correct time.
     
 
-7. If you press the 'X' button in the upper right corner, it will be executed in the system tray.
+8. If you press the 'X' button in the upper right corner, it will be executed in the system tray.
 
 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp; <img src="https://user-images.githubusercontent.com/70506921/131242206-f334f748-dd30-409b-8966-860e20551d24.png">
 
@@ -76,10 +79,12 @@ pyinstaller --windowed ^
 
 - Creating images with CPU requries high CPU utilization and memory resources, so take your time when creating the initial images. (This is only for generating images, once the images are generated, it doesn't require much CPU/RAM resources!)
 
-## Rooms for improvement
-- Select the resolution of the generated images.
+- You can use GPU to create images faster, but it still requires a lot of GPU memories.
 
-- Use GPU to create images if possible.
+## Rooms for improvement
+- Uses the server GPU to create the image instead of the local GPU.
+
+- Select the resolution of the generated images.
 
 - Make candidate images to pick the favorite one.
 
