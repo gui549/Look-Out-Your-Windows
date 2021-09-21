@@ -82,7 +82,7 @@ pyinstaller --windowed ^
 - You can use GPU to create images faster, but it still requires a lot of GPU memories.
 
 ## Rooms for improvement
-- Uses the server GPU to create the image instead of the local GPU.
+- Use the server GPU to create the image instead of the local GPU.
 
 - Select the resolution of the generated images.
 
