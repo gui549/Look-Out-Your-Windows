@@ -51,7 +51,7 @@ pyinstaller --windowed ^
 4. If you want to use GPU, press a 'GPU' checkbox. (If your GPU is unavailable, the checkbox is not enabled.)
 
 
-5. Press  the 'OK' button to create images.
+5. Press the 'OK' button to create images.
 
 
 6. If there exist a previously created images in the save folder, skip the create process.
@@ -82,7 +82,7 @@ pyinstaller --windowed ^
 - You can use GPU to create images faster, but it still requires a lot of GPU memories.
 
 ## Rooms for improvement
-- Uses the server GPU to create the image instead of the local GPU.
+- Use the server GPU to create the image instead of the local GPU.
 
 - Select the resolution of the generated images.
 
