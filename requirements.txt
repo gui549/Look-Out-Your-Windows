@@ -8,4 +8,4 @@ PyQt5
 psutil
 Pyinstaller
 
-~!--find-links https://download.pytorch.org/whl/torch_stable.html
+--find-links https://download.pytorch.org/whl/torch_stable.html

@@ -235,7 +235,6 @@ class InferThread(QThread):
                         enh_weights_path="./trained_models/enhancer/enhancer.pth", \
                         inference_size= self.inference_size, \
                         device='cuda', \
-                        batch_size=4, \
                         output_dir=self.save_path)
             else:
                 # Reduce the process priority to avoid stuck
@@ -246,6 +245,7 @@ class InferThread(QThread):
                         weight_path="./trained_models/generator/daytime.pt", \
                         enh_weights_path="./trained_models/enhancer/enhancer.pth", \
                         inference_size= self.inference_size, \
+                        device='cpu', \
                         output_dir=self.save_path)
             self.infer_finished.emit()
 

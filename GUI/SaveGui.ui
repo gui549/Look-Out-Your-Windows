@@ -84,7 +84,7 @@
     <string> Save this path</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="chkbox_save_2">
+  <widget class="QCheckBox" name="chkbox_GPU">
    <property name="enabled">
     <bool>false</bool>
    </property>
