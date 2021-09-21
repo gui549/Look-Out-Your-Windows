@@ -12,7 +12,7 @@ from hidt.utils.io import save_img, extract_images
 
 
 def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
-            enhancement='generator', inference_size=256, device='cpu', batch_size=1, output_dir='.'):
+            enhancement='generator', inference_size=512, device='cpu', batch_size=1, output_dir='.'):
 
     if device == 'cpu':
         # Set the maximum number of threads
@@ -42,7 +42,7 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
 
         # Make 4 sub-copies of original image (==> 4 diffrent coords high-resoulution images)
         crop_transform = GridCrop(4, 1, hires_size=inference_size * 4)
-        
+
         source_name = source_images_path[0].split('/')[-1].split('.')[0]
 
         for i, style_img_pil in enumerate(style_images_pil): # list of style tensors
@@ -64,21 +64,20 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
                                         source_name + '_to_' + style_name + '.jpg')
                         )
 
-            elif enhancement == 'fullconv':
-                result_images = []
-                for style in styles_decomposition:
-                    one_style_out = style_transformer.transfer_images_to_styles(source_images_pil,
-                                                                                [style],
-                                                                                batch_size=batch_size,
-                                                                                return_pil=True)
-                    result_images.append(one_style_out)
-        
-        
 # To test infer
 if __name__ == '__main__': 
+    # infer(data_dir="./Test1.jpg", style_dir="./images/styles/", \
+    #             cfg_path="./configs/daytime.yaml", \
+    #             weight_path="./trained_models/generator/daytime.pt", \
+    #             enh_weights_path="./trained_models/enhancer/enhancer.pth", \
+    #             inference_size=128, \
+    #             output_dir=".")
+
     infer(data_dir="./Test1.jpg", style_dir="./images/styles/", \
-                cfg_path="./configs/daytime.yaml", \
-                weight_path="./trained_models/generator/daytime.pt", \
-                enh_weights_path="./trained_models/enhancer/enhancer.pth", \
-                inference_size=512, \
-                output_dir=".")
+            cfg_path="./configs/daytime.yaml", \
+            weight_path="./trained_models/generator/daytime.pt", \
+            enh_weights_path="./trained_models/enhancer/enhancer.pth", \
+            inference_size= 512, \
+            device='cuda', \
+            batch_size=4, \
+            output_dir=".")
