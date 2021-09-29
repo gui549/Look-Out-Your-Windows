@@ -14,9 +14,9 @@ from hidt.utils.io import save_img, extract_images
 def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
             enhancement='generator', inference_size=512, device='cpu', batch_size=1, output_dir='.'):
 
+    # Set the maximum number of threads
     if device == 'cpu':
-        # Set the maximum number of threads
-        os.environ["OMP_NUM_THREADS"] = "1"
+        torch.set_num_threads(1)
 
     style_transformer = StyleTransformer(cfg_path, weight_path,
                                          inference_size=inference_size,
@@ -43,7 +43,9 @@ def infer(data_dir, style_dir, cfg_path, weight_path, enh_weights_path,
         # Make 4 sub-copies of original image (==> 4 diffrent coords high-resoulution images)
         crop_transform = GridCrop(4, 1, hires_size=inference_size * 4)
 
-        source_name = source_images_path[0].split('/')[-1].split('.')[0]
+        base = os.path.basename(source_images_path[0])
+        file_extension = '.' + base.split('.')[-1]
+        source_name = base.split(file_extension)[0]
 
         for i, style_img_pil in enumerate(style_images_pil): # list of style tensors
             styles_decomposition = style_transformer.get_style([style_img_pil]) # styles_decomposition = [{"style" : * X 1 X 1 style tensor}]
