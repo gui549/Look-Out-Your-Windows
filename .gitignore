@@ -4,7 +4,6 @@ __pycache__
 *.pyc
 venv
 winvenv
-Docker
 dist
 build
 *.spec
